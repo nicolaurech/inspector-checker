@@ -31,3 +31,14 @@ allowed_finding_severities = [
   'INFORMATIONAL',
   'UNTRIAGED'
 ]
+
+date_format = '%m-%d-%y'
+
+emojis = {
+  'chart': '\U0001F4C8',
+  'globe': '\N{earth globe europe-africa}',
+  'factory': '\N{factory}',
+  'magnifying_glass': '\U0001F50D',
+  'detective': '\U0001F575',
+  'robot': '\U0001F916'
+}
