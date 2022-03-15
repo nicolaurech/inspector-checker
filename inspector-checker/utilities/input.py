@@ -15,8 +15,8 @@ def parse_arguments():
   # Coverage
   parser_coverage = subparser.add_parser('coverage', formatter_class=argparse.ArgumentDefaultsHelpFormatter, help='Check the coverage of Inspector scanning')
   parser_coverage.add_argument('-r', '--region', dest='regions', type=check_region_input, default=inspector_supported_regions, help='region to check Inspector')
-  parser_coverage.add_argument('-o', '--output', action='store_true', help='save the results in a csv file')
   parser_coverage.add_argument('-d', '--detailed', action='store_true', help='show uncovered instances')
+  parser_coverage.add_argument('-o', '--output', action='store_true', help='save the results in a csv file')
 
   # Findings
   parser_findings = subparser.add_parser('findings', formatter_class=argparse.ArgumentDefaultsHelpFormatter, help='Check Inspector findings')
@@ -25,9 +25,6 @@ def parse_arguments():
   parser_findings.add_argument('-s', '--severities', type=check_severities_input, default='critical,high', help=f'comma-separated list of severities. Options: {[s.lower() for s in allowed_finding_severities]}')
   parser_findings.add_argument('-c', '--cve-id', type=check_cve_id, help='CVE to check')
   parser_findings.add_argument('-i', '--instance-id', type=check_instance_id_input, help='specific instance to check')
-  parser_findings.add_argument('-o', '--output', action='store_true', help='save the results in a csv file')
-  parser_findings.add_argument('-d', '--detailed', action='store_true', help='show results by CVE')
-  parser_findings.add_argument('--skip-pec', dest='skip_public_exploit_check', action='store_true', help='skip public exploit check')
   
   # Findings - time
   parser_findings_time_group = parser_findings.add_mutually_exclusive_group()
@@ -36,6 +33,10 @@ def parse_arguments():
   parser_findings_time_group.add_argument('--month', dest='time_month', type=check_time_month_input, help='something...')
   parser_findings.add_argument('--start-date', dest='time_start_date', type=check_time_date_input, help='something...')
   parser_findings.add_argument('--end-date', dest='time_end_date', type=check_time_date_input, help='something...')
+
+  parser_findings.add_argument('-d', '--detailed', action='store_true', help='show results by CVE')
+  parser_findings.add_argument('--skip-pec', dest='skip_public_exploit_check', action='store_true', help='skip public exploit check')
+  parser_findings.add_argument('-o', '--output', action='store_true', help='save the results in a csv file')
 
   args = parser.parse_args()
 
