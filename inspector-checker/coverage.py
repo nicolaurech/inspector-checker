@@ -15,6 +15,6 @@ def check_inspector_coverage(args):
       print(f'{emojis["chart"]} Detailed coverage\n')
       for region in coverage:
         detailed_data = format_detailed_coverage_data(coverage[region]['uncovered_instances'])
-        output_table(detailed_data, name=f'\N{world map}  {region}', style='STYLE_COMPACT')
+        output_table(detailed_data, name=f'{emojis["map"]}  {region}', style='STYLE_COMPACT')
         if args.output:
           output_report(detailed_data, args, region_override=region)

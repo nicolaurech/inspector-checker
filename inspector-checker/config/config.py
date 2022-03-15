@@ -36,9 +36,12 @@ date_format = '%m-%d-%Y'
 
 emojis = {
   'chart': '\U0001F4C8',
-  'globe': '\N{earth globe europe-africa}',
-  'factory': '\N{factory}',
+  'globe': '\U0001F30D',
+  'factory': '\U0001F3ED',
   'magnifying_glass': '\U0001F50D',
   'detective': '\U0001F575',
-  'robot': '\U0001F916'
+  'robot': '\U0001F916',
+  'map': '\U0001F5FA',
+  'pin': '\U0001F4CD',
+  'prohibited': '\U0001F6AB'
 }

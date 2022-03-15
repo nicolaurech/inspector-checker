@@ -15,7 +15,7 @@ def check_inspector_findings(args):
       print(f'{emojis["chart"]} Detailed findings\n')
       detailed_data = format_detailed_findings_data(findings)
       for finding_title in detailed_data:
-        output_table(detailed_data[finding_title], name=f'\N{round pushpin} {finding_title}', style='STYLE_COMPACT')
+        output_table(detailed_data[finding_title], name=f'{emojis["pin"]} {finding_title}', style='STYLE_COMPACT')
       if args.output:
         formatted_detailed_report_data = []
         for i, finding_title in enumerate(detailed_data):
