@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-inspector_checker_version = '1.0'
+inspector_checker_version = '1.1'
 
 inspector_supported_regions = [
   'us-east-1',
