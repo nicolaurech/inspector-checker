@@ -32,7 +32,7 @@ allowed_finding_severities = [
   'UNTRIAGED'
 ]
 
-date_format = '%m-%d-%y'
+date_format = '%m-%d-%Y'
 
 emojis = {
   'chart': '\U0001F4C8',
