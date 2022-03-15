@@ -3,8 +3,10 @@
 
 import argparse
 import re
+import calendar
+import datetime
 
-from config.config import inspector_supported_regions, allowed_finding_severities
+from config.config import inspector_supported_regions, allowed_finding_severities, date_format
 
 def parse_arguments():
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -17,26 +19,45 @@ def parse_arguments():
   parser_coverage.add_argument('-d', '--detailed', action='store_true', help='show uncovered instances')
 
   # Findings
-  parser_findings = subparser.add_parser('findings', formatter_class=argparse.ArgumentDefaultsHelpFormatter, help='Check recent Inspector findings')
-  parser_findings_mutually_exclusive_group = parser_findings.add_mutually_exclusive_group()
+  parser_findings = subparser.add_parser('findings', formatter_class=argparse.ArgumentDefaultsHelpFormatter, help='Check Inspector findings')
 
   parser_findings.add_argument('-r', '--region', dest='regions', type=check_region_input, default=inspector_supported_regions, help='region to check Inspector')
-  parser_findings.add_argument('-t', '--time', dest='time_period', type=check_time_input, help='analyze findings between now and this many hours ago')
-  parser_findings_mutually_exclusive_group.add_argument('-s', '--severities', type=check_severities_input, default='critical,high', help=f'comma-separated list of severities. Options: {[s.lower() for s in allowed_finding_severities]}')
-  parser_findings_mutually_exclusive_group.add_argument('-c', '--cve-id', type=check_cve_id, help='CVE to check')
+  parser_findings.add_argument('-s', '--severities', type=check_severities_input, default='critical,high', help=f'comma-separated list of severities. Options: {[s.lower() for s in allowed_finding_severities]}')
+  parser_findings.add_argument('-c', '--cve-id', type=check_cve_id, help='CVE to check')
   parser_findings.add_argument('-i', '--instance-id', type=check_instance_id_input, help='specific instance to check')
   parser_findings.add_argument('-o', '--output', action='store_true', help='save the results in a csv file')
+  parser_findings.add_argument('-d', '--detailed', action='store_true', help='show results by CVE')
   parser_findings.add_argument('--skip-pec', dest='skip_public_exploit_check', action='store_true', help='skip public exploit check')
+  
+  # Findings - time
+  parser_findings_time_group = parser_findings.add_mutually_exclusive_group()
+  parser_findings_time_group.add_argument('--hours', dest='time_hours', type=check_time_hours_days_input, help='something...')
+  parser_findings_time_group.add_argument('--days', dest='time_days', type=check_time_hours_days_input, help='something...')
+  parser_findings_time_group.add_argument('--month', dest='time_month', type=check_time_month_input, help='something...')
+  parser_findings.add_argument('--start-date', dest='time_start_date', type=check_time_date_input, help='something...')
+  parser_findings.add_argument('--end-date', dest='time_end_date', type=check_time_date_input, help='something...')
 
   args = parser.parse_args()
 
   if args.task == 'findings':
+    # Time
+    if args.time_hours or args.time_days or args.time_month:
+      if args.time_start_date:
+        parser_findings.error('argument --start-date: not allowed with arguments --hours or --months')
+      if args.time_end_date:
+        parser_findings.error('argument --end-date: not allowed with arguments --hours or --months')
     # Require region when instance id is specified
     if args.instance_id and len(args.regions) != 1:
-      parser_findings.error('Region must be specified when instance id is specified')
+      parser_findings.error('argument --region: required when instance id is specified')
     # Set severities to all allowed when searching by CVE
     if args.cve_id:
       args.severities = allowed_finding_severities
+    # Don't allow detailed when CVE specifed
+    if args.detailed and args.cve_id:
+      parser_findings.error('argument --detailed: not allowed with argument --cve-id')
+    # Don't allow detailed when instance id specifed
+    if args.detailed and args.instance_id:
+      parser_findings.error('argument --detailed: not allowed with argument --instance-id')
 
   return args
 
@@ -45,14 +66,30 @@ def check_region_input(region):
     raise argparse.ArgumentTypeError(f'Unsupported Inspector region: {region}')
   return [region]
 
-def check_time_input(time):
+def check_time_hours_days_input(time):
   try:
     itime = int(time)
     if itime <= 0:
       raise Exception
     return itime
   except:
-    raise argparse.ArgumentTypeError('Time must be a positive integer value')
+    raise argparse.ArgumentTypeError('Value must be a positive integer value')
+
+def check_time_month_input(time):
+  try:
+    months = calendar.month_name[1:]
+    if time.capitalize() not in months:
+      raise Exception
+    return time
+  except:
+    raise argparse.ArgumentTypeError('Value must be a valid month')
+
+def check_time_date_input(time):
+  try:
+    datetime.datetime.strptime(time, date_format)
+    return time
+  except ValueError:
+    raise argparse.ArgumentTypeError(f'Value must be in correct format, should be {date_format}')
 
 def check_severities_input(severities):
   severities_list = [s.strip() for s in severities.split(',')]
