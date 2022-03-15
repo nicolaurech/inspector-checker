@@ -8,9 +8,10 @@ from utilities.errors import endpoint_connection_error, no_credentials_error
 
 def inspector2_list_findings(region, filter_criteria):
   try:
+    regional_findings = []
     inspector2_client = boto3.client('inspector2', region_name=region)
     response = inspector2_client.list_findings(filterCriteria=filter_criteria)
-    regional_findings = response['findings']
+    regional_findings.extend(response['findings'])
     while 'nextToken' in response:
       response = inspector2_client.list_findings(
         filterCriteria=filter_criteria,
